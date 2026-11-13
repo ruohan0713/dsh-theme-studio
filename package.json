@@ -6,13 +6,13 @@
   "license": "MIT",
   "author": "dsh-theme-studio contributors",
   "icon": "icon.png",
-  "homepage": "https://github.com/YOUR_GITHUB_USER/dsh-theme-studio#readme",
+  "homepage": "https://github.com/ruohan0713/dsh-theme-studio#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_GITHUB_USER/dsh-theme-studio.git"
+    "url": "git+https://github.com/ruohan0713/dsh-theme-studio.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_GITHUB_USER/dsh-theme-studio/issues"
+    "url": "https://github.com/ruohan0713/dsh-theme-studio/issues"
   },
   "keywords": [
     "dsh",

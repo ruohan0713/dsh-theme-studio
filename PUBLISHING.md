@@ -12,7 +12,7 @@
 3. **仓库必须创建满 1 天**才能通过目录 CI —— 所以先建仓，明天再提 PR。
 4. 本仓库已包含：`assets/icon-180.png`（位图图标，**SVG 会被拒**）、`screenshots.json`（1–8 张截图）、`icon.png`、`LICENSE`、`README.md`、`CHANGELOG.md`。
 
-把 `package.json`、`awesome-dsh-plugin-entry.example.yml` 里的 **`YOUR_GITHUB_USER`** 全部替换成你的 GitHub 用户名（共 6 处，包括 `repository` / `homepage` / `bugs` / 示例条目 / icon raw 地址）。
+把 `package.json`、`awesome-dsh-plugin-entry.example.yml` 里的 **`ruohan0713`** 全部替换成你的 GitHub 用户名（共 6 处，包括 `repository` / `homepage` / `bugs` / 示例条目 / icon raw 地址）。
 
 ## 1. GitHub（源码 + Releases）
 

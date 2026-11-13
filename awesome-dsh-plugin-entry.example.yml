@@ -1,7 +1,7 @@
-url: https://github.com/YOUR_GITHUB_USER/dsh-theme-studio
-name: YOUR_GITHUB_USER/dsh-theme-studio
+url: https://github.com/ruohan0713/dsh-theme-studio
+name: ruohan0713/dsh-theme-studio
 category: theme
 description:
   en: "Twenty original literary themes for the DSH Web GUI: each ships light and dark palettes, 116 design tokens and an animated wallpaper."
   zh: "二十套原创文艺主题：每套含浅/深双调色板、116 个界面令牌与动态壁纸。"
-icon: https://raw.githubusercontent.com/YOUR_GITHUB_USER/dsh-theme-studio/main/assets/icon-180.png
+icon: https://raw.githubusercontent.com/ruohan0713/dsh-theme-studio/main/assets/icon-180.png
