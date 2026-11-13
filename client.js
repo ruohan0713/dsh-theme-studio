@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.4.0+wallpaper-upload';
+      const BUILD = '1.4.1+single-entry';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -2974,17 +2974,9 @@ ${PAGE_CSS}`;
         ),
       );
 
-      // The header switch only exists while a Session header is mounted; the
-      // sidebar foot is mounted for every main-panel state, including the
-      // blank-session home, so the theme stays reachable there.
-      trace.step = 'slot-sidebar-theme';
-      ctx.slots.inject('sidebar.footer.action', () =>
-        ctx.slots.register(
-          { name: 'sidebar.footer.action', id: 'theme-studio-foot', order: 20, label: () => UI_BINDING.t('fab'), locale: NS },
-          SidebarThemeAction,
-        ),
-      );
-
+      // The top-right switch (floating on home, header switch in a session) is the
+      // single theme entry; the old sidebar-footer row was removed on purpose.
+      trace.step = 'ready';
       // A blank new session ("新会话" Hero) hides the session header chrome; the
       // plugin-owned floating switch below covers that state at the top-right.
       trace.step = 'ready';
