@@ -108,3 +108,20 @@ tarball: https://github.com/ruohan0713/dsh-theme-studio/releases/download/v1.3.6
 ```
 
 本仓库 Release 已包含 `dsh-theme-studio-art.tgz`（版本号不在文件名里，后续发版可覆盖同名文件，保持该 URL 稳定）。等 npm 可用后再补 `npm publish`，并在条目里加回 `versions[].source.type = npm`。
+
+## 8. 发布安全与事故复盘（必读）
+
+> 2026-11-13：npm 账号 `ruohan0713` 被临时 suspended 72 小时，npm 邮件原因：**"a recovery code was used to log in"**。
+>
+> 触发链：Bypass-2FA token 直接 publish 被拒 → `npm stage approve` 出现 EOTP → 使用 recovery code 代替 OTP → 触发风控。
+
+今后发布必须遵守：
+
+1. **绝不用 recovery code 做登录/approve/2FA 验证**，只用验证器 App 的 6 位 TOTP 或用户明确授权的合规 token；
+2. 不使用 Bypass-2FA token 发布，除非用户明确知情同意；
+3. 遇到 `EOTP` / `E403` / `suspended` **立即停止**并告知用户，不要反复换 token/恢复码重试；
+4. token / recovery code 不进聊天、README、Issue；用完撤销并轮换；
+5. 账号被 suspended 时等待自动恢复，**不要注册新账号规避**；
+6. npm 是可选渠道：GitHub Release 的 `.tgz` + 本目录条目的 `tarball:` 字段即可被收录和安装。
+
+恢复后的正确流程：等待恢复（2026-11-16 04:25 UTC）→ 用验证器当前 6 位码/合规 token `npm stage approve` → 发布 → 撤销泄露 token、重生成 recovery codes。
