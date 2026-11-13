@@ -22,11 +22,11 @@
 git remote add origin https://github.com/<你的GitHub用户名>/dsh-theme-studio.git
 git branch -M main
 git push -u origin main
-git tag v1.3.4
-git push origin v1.3.4
+git tag v1.3.6
+git push origin v1.3.6
 ```
 
-在 Release 页上传 `dsh-theme-studio-1.3.4.zip`，说明可直接用 `CHANGELOG.md` 的 1.3.4 段与 README 截图。
+在 Release 页上传 `dsh-theme-studio-1.3.6.zip`，说明可直接用 `CHANGELOG.md` 的 1.3.6 段与 README 截图。
 
 > 不想配 git 凭据：可用 GitHub 网页 **Add file → Upload files** 上传本目录内容，或用 GitHub Desktop。
 
@@ -104,7 +104,7 @@ icon: https://raw.githubusercontent.com/<user>/dsh-theme-studio/main/assets/icon
 如果暂时无法登录 npm（例如网络访问 www.npmjs.com 返回 403，或没有 npm 账号），可以把 `npm pack` 生成的 tarball 挂到 GitHub Release，并在 awesome-dsh-plugin 条目里用 `tarball:` 指向它：
 
 ```yaml
-tarball: https://github.com/ruohan0713/dsh-theme-studio/releases/download/v1.3.4/dsh-theme-studio-art.tgz
+tarball: https://github.com/ruohan0713/dsh-theme-studio/releases/download/v1.3.6/dsh-theme-studio-art.tgz
 ```
 
 本仓库 Release 已包含 `dsh-theme-studio-art.tgz`（版本号不在文件名里，后续发版可覆盖同名文件，保持该 URL 稳定）。等 npm 可用后再补 `npm publish`，并在条目里加回 `versions[].source.type = npm`。
