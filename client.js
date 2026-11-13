@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.5+sharp-clear';
+      const BUILD = '1.3.6+clear-all';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -1259,12 +1259,12 @@ html[data-theme-studio] body[data-ds-dark-theme] { --ts-sheet: #16171b; }
  * 'standard' is the default (clearer than the original veil); 'soft' restores
  * the old look, 'clear' lets the artwork read almost unfiltered. Lower alpha =
  * more wallpaper detail, less text contrast reserve. */
-html[data-theme-studio] { --ts-veil: 0.44; }
-html[data-theme-studio] body[data-ds-dark-theme] { --ts-veil: 0.46; }
-html[data-theme-studio][data-theme-clarity="soft"] { --ts-veil: 0.66; }
-html[data-theme-studio][data-theme-clarity="soft"] body[data-ds-dark-theme] { --ts-veil: 0.64; }
-html[data-theme-studio][data-theme-clarity="clear"] { --ts-veil: 0.16; }
-html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme] { --ts-veil: 0.26; }
+html[data-theme-studio] { --ts-veil: 0.22; }
+html[data-theme-studio] body[data-ds-dark-theme] { --ts-veil: 0.26; }
+html[data-theme-studio][data-theme-clarity="soft"] { --ts-veil: 0.34; }
+html[data-theme-studio][data-theme-clarity="soft"] body[data-ds-dark-theme] { --ts-veil: 0.38; }
+html[data-theme-studio][data-theme-clarity="clear"] { --ts-veil: 0.10; }
+html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme] { --ts-veil: 0.14; }
 /* Clear mode is a promise: keep the artwork itself crisp.
  * - no zoom/scale animation (the 1.05–1.12 upscale resamples the wallpaper)
  * - the living-light glow layer is nearly removed (it veils detail)
@@ -1272,7 +1272,7 @@ html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme] { -
  *   dark companion image (or a soft watercolour source) lacks.
  */
 html[data-theme-studio][data-theme-clarity="clear"] body::before {
-  filter: saturate(1.06) contrast(1.04) url(#ts-clarity-sharpen);\n  image-rendering: -webkit-optimize-contrast;
+  filter: saturate(1.14) contrast(1.09) url(#ts-clarity-sharpen);\n  image-rendering: -webkit-optimize-contrast;
   transform: translate3d(0, 0, 0);
   animation: none;
   /* No compositor layer promotion: an animated/upscaled fixed layer can be
@@ -1300,7 +1300,7 @@ html[data-theme-studio] body::before {
   background-repeat: no-repeat;
   /* A whisper of local contrast keeps the artwork from reading as flat haze
    * once the scrim is thinned; the layer is static apart from the GPU pan. */
-  filter: saturate(1.06) contrast(1.03);
+  filter: saturate(1.12) contrast(1.08);
   transform: translate3d(-1.2%, 0.8%, 0) scale(1.05);
   animation: ts-pan var(--ts-pan-dur, 36s) ease-in-out infinite alternate;
   will-change: transform;
@@ -2115,7 +2115,7 @@ ${PAGE_CSS}`;
        * clearer lets the artwork through the main column too.
        */
       const installLayer = (family) => {
-        const factor = state.clarity === 'clear' ? 0.18 : state.clarity === 'soft' ? 0.72 : 0.48;
+        const factor = state.clarity === 'clear' ? 0.1 : state.clarity === 'soft' ? 0.5 : 0.28;
         const overrides = {};
         // `overrideTokens` wants token-name -> { light, dark }, not the two
         // scheme maps side by side. Cross the per-scheme token maps here.
