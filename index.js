@@ -24,7 +24,7 @@
  * @module dsh-theme-studio
  */
 import { existsSync } from 'node:fs';
-import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,6 +34,10 @@ const SENTINEL = join(HERE, 'enable-diagnostics');
 const DIAG_FILE = join(HERE, 'theme-studio-diagnostics.json');
 const ROUTE = '/theme-studio';
 const MAX_DIAG_BYTES = 2 * 1024 * 1024;
+const MAX_WALLPAPER_BYTES = 30 * 1024 * 1024;
+
+/** Custom wallpaper file name: `<theme-id>[-dark|-light].(jpg|png|webp|avif)`. */
+const WALLPAPER_NAME_RE = /^[a-z0-9][a-z0-9-]{0,60}(?:-(?:dark|light))?\.(?:jpg|jpeg|png|webp|avif)$/;
 
 /** Supported wallpaper media types. */
 const MEDIA_TYPES = new Map([
@@ -234,6 +238,80 @@ async function handleDiag(req, res) {
 }
 
 /**
+ * Save one user-supplied wallpaper. Exported so the upload route can be unit
+ * tested without a live host.
+ * @param {string} name - requested file name, `<theme-id>[-dark|-light].ext`.
+ * @param {Buffer} bytes - image bytes.
+ * @param {string} [directory] - target directory (defaults to the plugin's).
+ * @returns {Promise<{ok: true, name: string, bytes: number}>} the saved file.
+ */
+export async function saveWallpaper(name, bytes, directory = WALLPAPER_DIR) {
+  const fileName = String(name || '').trim().toLowerCase();
+  if (!WALLPAPER_NAME_RE.test(fileName)) {
+    throw Object.assign(new Error('file name must look like <theme-id>.jpg'), { status: 400 });
+  }
+  if (!bytes || bytes.byteLength === 0) {
+    throw Object.assign(new Error('empty file'), { status: 400 });
+  }
+  if (bytes.byteLength > MAX_WALLPAPER_BYTES) {
+    throw Object.assign(new Error('image too large (max 30 MB)'), { status: 413 });
+  }
+  await mkdir(directory, { recursive: true });
+  const target = resolve(normalize(join(directory, fileName)));
+  if (target !== directory && !target.startsWith(directory + sep)) {
+    throw Object.assign(new Error('invalid path'), { status: 400 });
+  }
+  await writeFile(target, bytes);
+  return { ok: true, name: fileName, bytes: bytes.byteLength };
+}
+
+/**
+ * User wallpaper upload: POST /theme-studio/upload?name=<theme-id>.jpg
+ * Body is the raw image bytes. Overwrites an existing file with that name.
+ * @param {import('node:http').IncomingMessage} req - request.
+ * @param {import('node:http').ServerResponse} res - response.
+ */
+async function handleUpload(req, res) {
+  try {
+    if (req.method !== 'POST') {
+      res.writeHead(405, { allow: 'POST', 'content-type': 'text/plain; charset=utf-8' });
+      res.end('POST only');
+      return;
+    }
+    const url = new URL(req.url || '/', 'http://local');
+    const name = url.searchParams.get('name') || '';
+    const type = String(req.headers['content-type'] || '');
+    if (!/^image\//.test(type)) {
+      throw Object.assign(new Error('content-type must be an image'), { status: 415 });
+    }
+    const chunks = [];
+    let length = 0;
+    for await (const chunk of req) {
+      length += chunk.length;
+      if (length > MAX_WALLPAPER_BYTES) {
+        throw Object.assign(new Error('image too large (max 30 MB)'), { status: 413 });
+      }
+      chunks.push(chunk);
+    }
+    const result = await saveWallpaper(name, Buffer.concat(chunks));
+    res.writeHead(200, {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+      'x-content-type-options': 'nosniff',
+    });
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    const status = error && error.status ? error.status : 400;
+    try {
+      res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(JSON.stringify({ ok: false, error: String(error && error.message ? error.message : error) }));
+    } catch {
+      /* socket may already be gone */
+    }
+  }
+}
+
+/**
  * Register the asset and diagnostics routes.
  * @param {import('@deepseek-ai/cordis').Context} ctx - owning plugin context.
  */
@@ -245,5 +323,9 @@ export function apply(ctx) {
   ctx.effect(
     () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/diag`, handler: handleDiag }),
     'theme-studio: diagnostics sink',
+  );
+  ctx.effect(
+    () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/upload`, handler: handleUpload }),
+    'theme-studio: wallpaper upload',
   );
 }

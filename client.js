@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.9+panel-buttons';
+      const BUILD = '1.4.0+wallpaper-upload';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -1189,7 +1189,10 @@ html[data-theme-studio="${family.id}"] body[data-ds-dark-theme] {
 .ts-foot { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 0.5px solid var(--dsw-alias-border-l1); font-size: 11px; line-height: 17px; color: var(--dsw-alias-label-tertiary); }
 .ts-path { display: block; padding: 6px 8px; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: 8px; background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font-family: var(--ds-font-family-code); font-size: 11px; line-height: 16px; word-break: break-all; }
 .ts-footRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.ts-linkBtn { border: 0; background: transparent; padding: 0; color: var(--dsw-alias-brand-primary); font: inherit; font-size: 11px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.ts-linkBtn:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); border-color: var(--dsw-alias-border-l3); }
+.ts-uploadBtn { color: var(--dsw-alias-label-primary); font-weight: 500; }
+.ts-uploadNote { font-size: 11px; line-height: 16px; color: var(--dsw-alias-brand-primary); }
+.ts-linkBtn { display: inline-flex; align-items: center; gap: 5px; border: 0.5px solid var(--dsw-alias-border-l2); border-radius: 999px; padding: 3px 10px; background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font: inherit; font-size: 11px; line-height: 16px; cursor: pointer; text-decoration: none; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease; }
 .ts-badge { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px; background: var(--dsw-alias-bg-layer-3); border: 0.5px solid var(--dsw-alias-border-l1); color: var(--dsw-alias-label-secondary); font-size: 10px; line-height: 16px; }
 .ts-quick { display: flex; flex-direction: column; gap: 8px; padding: 14px 0; border-bottom: 0.5px solid var(--dsw-alias-border-l2); }
 .ts-quickHead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -1417,11 +1420,17 @@ ${PAGE_CSS}`;
         off: '关',
         schemeLight: '当前：浅色',
         schemeDark: '当前：深色',
-        wallpaperFound: '已检测到 {n} 张壁纸',
+        wallpaperFound: '已检测到 {n} 套主题壁纸',
+        wallpaperFoundHint: '扫描壁纸目录得到的可用背景图数量；点「刷新壁纸」可重新扫描',
         wallpaperNone: '尚未放入壁纸，正在使用内置渐变艺术',
         pathTitle: '壁纸目录',
-        pathHint: '把 GPT 生成的图片命名为 <主题 id>.jpg（或 .png / .webp）放入该目录，刷新后即可生效。',
-        refresh: '重新检测',
+        pathHint: '支持自定义背景图：把图片命名为 <主题 id>.jpg / .png / .webp（配套图用 <id>-dark / <id>-light）放进壁纸目录，或点「上传/替换壁纸」。',
+        refresh: '刷新壁纸',
+        uploadWallpaper: '上传 / 替换壁纸',
+        uploadBadName: '文件名需带主题 id，例如 ink-mist.jpg 或 ink-mist-dark.jpg',
+        uploadTooLarge: '图片过大：上限 30 MB',
+        uploadOk: '已更新 {name}，正在刷新预览…',
+        uploadFail: '上传失败：{msg}',
         footerNote: '主题只覆盖颜色与材质令牌，不改动任何功能；关闭本页或恢复默认即可回到原生外观。',
       },
       en: {
@@ -1455,11 +1464,17 @@ ${PAGE_CSS}`;
         off: 'Off',
         schemeLight: 'Now: light',
         schemeDark: 'Now: dark',
-        wallpaperFound: '{n} wallpaper(s) detected',
+        wallpaperFound: '{n} theme wallpaper(s) detected',
+        wallpaperFoundHint: 'Number of background images found by scanning the wallpaper folder; click Refresh to rescan',
         wallpaperNone: 'No wallpaper yet — using the built-in gradient art',
         pathTitle: 'Wallpaper folder',
-        pathHint: 'Name GPT output <theme-id>.jpg (or .png / .webp), drop it in this folder, then refresh.',
-        refresh: 'Rescan',
+        pathHint: 'Custom wallpapers: name the image <theme-id>.jpg / .png / .webp (companions <id>-dark / <id>-light), drop it in this folder, or click Upload / Replace.',
+        refresh: 'Refresh wallpapers',
+        uploadWallpaper: 'Upload / replace wallpaper',
+        uploadBadName: 'The file name needs a theme id, e.g. ink-mist.jpg or ink-mist-dark.jpg',
+        uploadTooLarge: 'Image is too large (max 30 MB)',
+        uploadOk: 'Updated {name}, refreshing preview…',
+        uploadFail: 'Upload failed: {msg}',
         footerNote: 'Themes only override color and material tokens; every feature stays untouched. Restore the default look to go back.',
       },
     };
@@ -1864,6 +1879,41 @@ ${PAGE_CSS}`;
       const t = (key) => UI.t(key);
       const families = state.families;
       const count = state.wallpaperCount;
+      const [uploadNote, setUploadNote] = React.useState('');
+      const pickWallpaper = () => {
+        if (typeof document === 'undefined') return;
+        const input = document.getElementById('ts-wallpaper-upload');
+        if (input) input.click();
+      };
+      const onWallpaperPicked = async (event) => {
+        const input = event && event.target;
+        const file = input && input.files && input.files[0];
+        if (!file) return;
+        const name = String(file.name || '').toLowerCase();
+        if (!/^[a-z0-9][a-z0-9-]{0,60}(?:-(?:dark|light))?\.(?:jpg|jpeg|png|webp|avif)$/.test(name)) {
+          setUploadNote(t('uploadBadName'));
+          return;
+        }
+        if (file.size > 30 * 1024 * 1024) {
+          setUploadNote(t('uploadTooLarge'));
+          return;
+        }
+        try {
+          const response = await fetch(`${ROUTE}/upload?name=${encodeURIComponent(name)}`, {
+            method: 'POST',
+            headers: { 'content-type': file.type || 'image/jpeg' },
+            body: file,
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data && data.error ? data.error : 'HTTP ' + response.status);
+          setUploadNote(t('uploadOk').replace('{name}', name));
+          UI.actions.refreshWallpapers();
+        } catch (error) {
+          setUploadNote(t('uploadFail').replace('{msg}', String(error && error.message ? error.message : error)));
+        } finally {
+          if (input) input.value = '';
+        }
+      };
       return h(
         'div',
         { className: 'ts-page' },
@@ -1930,11 +1980,20 @@ ${PAGE_CSS}`;
           h(
             'div',
             { className: 'ts-footRow' },
-            h('span', { className: 'ts-badge' }, count > 0 ? t('wallpaperFound').replace('{n}', String(count)) : t('wallpaperNone')),
+            h('span', { className: 'ts-badge', title: t('wallpaperFoundHint') }, count > 0 ? t('wallpaperFound').replace('{n}', String(count)) : t('wallpaperNone')),
             state.manifest && state.manifest.directory ? h('button', { type: 'button', className: 'ts-linkBtn', onClick: () => UI.actions.refreshWallpapers() }, t('refresh')) : null,
+            state.manifest && state.manifest.directory ? h('button', { type: 'button', className: 'ts-linkBtn ts-uploadBtn', onClick: pickWallpaper }, t('uploadWallpaper')) : null,
+            h('input', {
+              id: 'ts-wallpaper-upload',
+              type: 'file',
+              accept: 'image/jpeg,image/png,image/webp,image/avif',
+              style: { display: 'none' },
+              onChange: onWallpaperPicked,
+            }),
           ),
-          state.manifest && state.manifest.directory ? h('span', { className: 'ts-path' }, state.manifest.directory) : null,
+          state.manifest && state.manifest.directory ? h('span', { className: 'ts-path', title: t('pathTitle') }, state.manifest.directory) : null,
           h('div', null, t('pathHint')),
+          uploadNote ? h('div', { className: 'ts-uploadNote' }, uploadNote) : null,
           h('div', null, t('footerNote')),
         ),
       );
@@ -2492,6 +2551,9 @@ ${PAGE_CSS}`;
           workspaceChip: workspaceChipProbe(),
           themeNeighbors: themeNeighborProbe(),
           themeHead: probeStyle('.ts-headBtn'),
+          uploadButtonText: (() => { const node = document.querySelector('.ts-uploadBtn'); return node ? String(node.textContent || '').trim() : null; })(),
+          wallpaperBadgeText: (() => { const node = document.querySelector('.ts-badge'); return node ? String(node.textContent || '').trim() : null; })(),
+          wallpaperHintText: (() => { const node = document.querySelector('.ts-foot'); return node ? String(node.innerText || '').replace(/\s+/g, ' ').slice(0, 240) : null; })(),
           sidebarCandidates: [...document.querySelectorAll('*')].filter((node) => typeof node.className === 'string' && /sidebar/i.test(node.className)).slice(0, 6).map((node) => { const style = getComputedStyle(node); const rect = node.getBoundingClientRect(); return { cls: String(node.className).slice(0, 90), bg: style.backgroundColor, w: Math.round(rect.width), h: Math.round(rect.height), x: Math.round(rect.x) }; }),
           mainSurface: (() => { const node = document.querySelector('[data-conversation-root], [class*="scrollBody"], [class*="centerCol"], main'); if (!node) return null; const style = getComputedStyle(node); return { cls: String(node.className || '').slice(0, 90), bg: style.backgroundColor }; })(),
           themeFab: probeStyle('.ts-fabBtn'),
