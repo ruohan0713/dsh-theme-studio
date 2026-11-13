@@ -44,8 +44,7 @@
                   "PUBLISHING.md",
                   "screenshots.json",
                   "assets/*.png",
-                  "assets/screenshots/*",
-                  "design/*.md"
+                  "assets/screenshots/*"
               ],
     "dsh":  {
                 "bundle":  {

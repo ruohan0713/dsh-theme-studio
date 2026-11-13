@@ -21,5 +21,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Note on bundled artwork: the wallpaper images in `wallpapers/` were generated
-with an AI image service for this project. Their license is governed by the
+with GPT for this project. Their license is governed by the
 terms of that service; the MIT license above covers the plugin code only.
