@@ -1,8 +1,29 @@
 # DSH Theme Studio · 主题工作室
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-2f6f4f.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/ruohan0713/dsh-theme-studio?color=8a6a4f)](https://github.com/ruohan0713/dsh-theme-studio/releases)
+[![DSH plugin](https://img.shields.io/badge/DeepSeek%20Harness-plugin-6c8cd5)](https://github.com/topics/dsh-plugin)
+[![Live demo](https://img.shields.io/badge/Live%20demo-GitHub%20Pages-c08a5a)](https://ruohan0713.github.io/dsh-theme-studio/)
+
 > **20 套原创主题** for DeepSeek Harness（DSH）——水墨、宋瓷、羊皮手稿、月白幽蓝、水彩、色域、暮色油画、银盐光影，以及第二批的春江水暖、竹影清风、晨光书页、海阔天空、灯下夜读、星河长夜、古道远行、荷塘晨露、炊烟归处、雨窗煮茶、云海日出、纸鹤寄愿。
 >
 > Twenty original literary & artistic themes for [DeepSeek Harness](https://github.com/deepseek-ai). Every theme ships a full light/dark token pair and an animated wallpaper layer.
+>
+> **🔗 在线预览 / Live demo：<https://ruohan0713.github.io/dsh-theme-studio/>**（不用安装即可点选 20 套主题、切换浅/深与清晰度）
+
+![20 套主题 15 秒切换](assets/screenshots/themes.gif)
+
+## English
+
+**DSH Theme Studio** brings 20 original literary / artistic themes to DeepSeek Harness: ink wash, celadon, parchment, moonlit, watercolour, colour field, oil dusk, silver film, spring river, bamboo wind, morning page, sea horizon, lantern night, starry journey, ancient path, lotus dawn, home smoke, rain tea, summit dawn and paper wish.
+
+- 20 themes, each a complete **116-token** light/dark palette with a matched animated wallpaper
+- **Free theme selection**, **fixed mode**, and a **2-day carousel** (manual choice resets the timer)
+- **Three background-clarity levels**, light / dark / system appearance, animated-wallpaper toggle
+- Opaque dialogs, composer, tool cards and code blocks (fixes text bleeding through)
+- Windows title-bar integration; four entry points (top-right button, session header, sidebar footer, Settings)
+
+Try the [live demo](https://ruohan0713.github.io/dsh-theme-studio/), download the latest `.tgz` from [Releases](https://github.com/ruohan0713/dsh-theme-studio/releases), and follow the install section below.
 
 ## 20 套主题 · 浅色一览
 
