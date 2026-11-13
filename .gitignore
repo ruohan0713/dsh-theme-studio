@@ -1,0 +1,18 @@
+node_modules/
+npm-debug.log*
+yarn-error.log*
+*.log
+
+# local diagnostics sentinel + output
+enable-diagnostics
+theme-studio-diagnostics.json
+
+# workspace-only artifacts
+backups/
+_diag/
+release/
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
