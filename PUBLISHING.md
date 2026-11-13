@@ -99,3 +99,12 @@ icon: https://raw.githubusercontent.com/<user>/dsh-theme-studio/main/assets/icon
 3. 设置 → 主题工作室 → 壁纸目录显示 40 张（20 主图 + 20 配套）。
 
 > 本机当前以 `link:` 方式安装的是同名旧包 `dsh-theme-studio`；用正式包验证时先移除旧 link，避免同名冲突。
+## 7. 没有 npm 账号时的备选（本仓库已采用）
+
+如果暂时无法登录 npm（例如网络访问 www.npmjs.com 返回 403，或没有 npm 账号），可以把 `npm pack` 生成的 tarball 挂到 GitHub Release，并在 awesome-dsh-plugin 条目里用 `tarball:` 指向它：
+
+```yaml
+tarball: https://github.com/ruohan0713/dsh-theme-studio/releases/download/v1.3.4/dsh-theme-studio-art.tgz
+```
+
+本仓库 Release 已包含 `dsh-theme-studio-art.tgz`（版本号不在文件名里，后续发版可覆盖同名文件，保持该 URL 稳定）。等 npm 可用后再补 `npm publish`，并在条目里加回 `versions[].source.type = npm`。
