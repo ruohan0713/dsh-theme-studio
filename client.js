@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.8+sidebar-wash';
+      const BUILD = '1.3.9+panel-buttons';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -1210,9 +1210,11 @@ html[data-theme-studio="${family.id}"] body[data-ds-dark-theme] {
 .ts-fabHead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .ts-fabTitle { font-size: 13px; line-height: 20px; font-weight: 500; }
 .ts-fabNow { font-size: 11px; line-height: 16px; color: var(--dsw-alias-label-tertiary); }
-.ts-fabModes { display: flex; gap: 6px; padding: 3px; border-radius: 10px; background: var(--dsw-alias-bg-layer-2); }
-.ts-fabMode { flex: 1; border: 0; border-radius: 8px; padding: 5px 6px; background: transparent; color: var(--dsw-alias-label-secondary); font: inherit; font-size: 11px; line-height: 16px; cursor: pointer; }
-.ts-fabMode.is-active { background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); box-shadow: 0 0 0 0.5px var(--dsw-alias-border-l2); }
+.ts-fabModes { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: var(--dsw-alias-bg-layer-1); border: 0.5px solid var(--dsw-alias-border-l2); }
+.ts-fabMode { flex: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 28px; border: 0.5px solid var(--dsw-alias-border-l2); border-radius: 7px; padding: 4px 8px; background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font: inherit; font-size: 11px; line-height: 16px; font-weight: 500; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+.ts-fabMode:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); border-color: var(--dsw-alias-border-l3); }
+.ts-fabMode.is-active { background: color-mix(in srgb, var(--dsw-alias-brand-primary) 82%, #000); border-color: color-mix(in srgb, var(--dsw-alias-brand-primary) 82%, #000); color: var(--dsw-alias-label-primary-foreground); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+.ts-fabMode:focus-visible, .ts-clarityBtn:focus-visible { outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: 1px; }
 .ts-fabGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .ts-fabItem { display: flex; align-items: center; gap: 7px; padding: 5px; border: 0.5px solid var(--dsw-alias-border-l1); border-radius: 10px; background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font: inherit; font-size: 11px; line-height: 16px; cursor: pointer; text-align: left; }
 .ts-fabItem:hover { border-color: var(--dsw-alias-border-l3); color: var(--dsw-alias-label-primary); }
@@ -1227,10 +1229,10 @@ html[data-theme-studio="${family.id}"] body[data-ds-dark-theme] {
 .ts-clarityHead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
 .ts-clarityTitle { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }
 .ts-clarityHint { font-size: 11px; line-height: 16px; color: var(--dsw-alias-label-tertiary); }
-.ts-clarityGroup { display: inline-flex; gap: 4px; padding: 3px; border-radius: 10px; background: var(--dsw-alias-bg-layer-2); align-self: flex-start; border: 0.5px solid var(--dsw-alias-border-l1); }
-.ts-clarityBtn { border: 0; border-radius: 8px; padding: 5px 14px; background: transparent; color: var(--dsw-alias-label-secondary); font: inherit; font-size: 12px; line-height: 18px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
-.ts-clarityBtn:hover { color: var(--dsw-alias-label-primary); }
-.ts-clarityBtn.is-active { background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary); box-shadow: 0 0 0 0.5px var(--dsw-alias-border-l2); }
+.ts-clarityGroup { display: inline-flex; gap: 4px; padding: 3px; border-radius: 10px; background: var(--dsw-alias-bg-layer-1); align-self: flex-start; border: 0.5px solid var(--dsw-alias-border-l2); }
+.ts-clarityBtn { border: 0.5px solid var(--dsw-alias-border-l2); border-radius: 8px; padding: 6px 16px; min-height: 32px; background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-secondary); font: inherit; font-size: 12px; line-height: 18px; font-weight: 500; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+.ts-clarityBtn:hover { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); border-color: var(--dsw-alias-border-l3); }
+.ts-clarityBtn.is-active { background: color-mix(in srgb, var(--dsw-alias-brand-primary) 82%, #000); border-color: color-mix(in srgb, var(--dsw-alias-brand-primary) 82%, #000); color: var(--dsw-alias-label-primary-foreground); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
 @media (max-width: 767px) { .ts-head { align-items: flex-start; } .ts-title { font-size: 19px; line-height: 27px; } }
 .ts-footWrap { position: relative; display: flex; align-items: center; }
 .ts-footWrap.is-wide { width: 100%; }

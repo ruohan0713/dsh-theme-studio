@@ -41,6 +41,8 @@ Try the [live demo](https://ruohan0713.github.io/dsh-theme-studio/), download th
 
 ## 功能 Features
 
+![主题面板：固定/轮播与清晰度控件](assets/screenshots/panel.jpg)
+
 ![功能总览](assets/screenshots/features.jpg)
 
 - **自由选择主题**：20 套主题任意切换，点击即时生效并记住选择；入口有四个——右上角「主题」按钮、会话头部「主题」、侧栏底部主题行、设置 → 通用 → 主题 / 主题工作室。
