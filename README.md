@@ -4,22 +4,39 @@
 >
 > Twenty original literary & artistic themes for [DeepSeek Harness](https://github.com/deepseek-ai). Every theme ships a full light/dark token pair and an animated wallpaper layer.
 
-![主题总览](assets/screenshots/themes-preview.jpg)
+## 20 套主题 · 浅色一览
+
+![20 套主题浅色外观](assets/screenshots/themes-light.jpg)
+
+## 20 套主题 · 深色一览
+
+![20 套主题深色外观](assets/screenshots/themes-dark.jpg)
+
+## 同一主题的浅色 / 深色
+
+![水彩花影 浅色/深色](assets/screenshots/showcase-light-dark.jpg)
 
 ---
 
-## 特性 Features
+## 功能 Features
 
-- **20 套主题 · 每套 116 个界面令牌**：背景、侧栏、卡片、输入框、代码块、弹窗、滚动条、状态色一整套联动，不是"只换一张壁纸"。
-- **浅 / 深双色**：跟随 DSH 原生「外观 → 浅色 / 深色 / 跟随系统」自动切换；每套主题都有对应配套壁纸。
-- **动态壁纸**：缓慢推拉（Ken Burns）、光晕呼吸、扫光/纸纹漂移、鼠标视差；尊重系统"减少动态效果"，可一键关闭。
-- **背景清晰度三档**：淡雅 / 标准 / 清晰，整体可调且档差均匀，兼顾壁纸细节与文字可读性。
+![功能总览](assets/screenshots/features.jpg)
+
+- **自由选择主题**：20 套主题任意切换，点击即时生效并记住选择；入口有四个——右上角「主题」按钮、会话头部「主题」、侧栏底部主题行、设置 → 通用 → 主题 / 主题工作室。
+- **固定模式（Fixed）**：手动选中的主题一直保持，不会自动更换。
+- **轮播模式（Carousel）**：每 2 天自动切换到下一套主题；任何时候手动选择主题都会**重新计时**，不会和手动选择打架。
+- **背景清晰度三档**：淡雅 / 标准 / 清晰，一键调整壁纸与界面之间的薄纱厚度；三档整体可调、档差均匀，清晰档接近原图细节。
+- **浅色 / 深色 / 跟随系统**：每套主题都有完整的浅色与深色配色，并各自配有对应壁纸；跟随 DSH 原生的外观开关自动切换。
+- **动态壁纸**：缓慢推拉（Ken Burns）、光晕呼吸、扫光/纸纹漂移、鼠标视差；尊重系统"减少动态效果"，也可以一键关闭动态。
+- **壁纸开关与自定义**：可以关闭壁纸只留 CSS 艺术层，也可以把 `wallpapers/` 里的图片换成自己的图。
+- **每套 116 个界面令牌**：背景、侧栏、卡片、输入框、代码块、弹窗、滚动条、状态色一整套联动，不是"只换一张壁纸"。
 - **可读性优先的界面层**：弹窗、输入框、工具/交付卡、diff、代码块均为不透明纸色，不会透出背后聊天内容（见 `assets/screenshots/surface-bleed-*.png`）。
 - **Windows 标题栏一体化**：原生窗口按钮区透明化，符号色跟随主题文字色，与主题标题栏无缝衔接。
 - **零第三方美术素材**：20 张主图 + 20 张浅/深配套图均由作者用 AI 生图生成（见 `design/` 里的提示词），代码与主题定义原创，MIT 许可。
 
-![界面效果](assets/screenshots/themes-composite.jpg)
-![清晰度三档](assets/screenshots/clarity-levels.jpg)
+### 背景清晰度对比
+
+![清晰度三档：淡雅 / 标准 / 清晰](assets/screenshots/clarity-levels.jpg)
 
 ## 安装 Install
 
