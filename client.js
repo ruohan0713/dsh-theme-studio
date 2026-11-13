@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.7+fab-context';
+      const BUILD = '1.3.8+sidebar-wash';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -888,7 +888,10 @@ window.__ModuleLoader__.load({
       const surface2 = mixIntoTint(base, '#FFFFFF', dark ? 0.1 : 0.3);
       const surface3 = mixIntoTint(base, '#FFFFFF', dark ? 0.13 : 0.38);
       const overlay = mixIntoTint(base, '#FFFFFF', dark ? 0.09 : 0.28);
-      const sidebarFill = rgba(mixIntoTint(palette.sidebar, base, 0.14), alphaOf(palette.sidebar) * 0.6);
+      /* The sidebar is a canvas surface too: keep it on the same clarity
+       * ladder as the content column, otherwise clear mode leaves a pale
+       * rectangle on the left that reads as a different, unthemed panel. */
+      const sidebarFill = rgba(mixIntoTint(palette.sidebar, base, 0.6), dark ? 0.35 : 0.4);
       const hover = rgba(ink, dark ? 0.075 : 0.065);
       const active = rgba(ink, dark ? 0.12 : 0.105);
       return {
@@ -2127,7 +2130,7 @@ ${PAGE_CSS}`;
         // scheme maps side by side. Cross the per-scheme token maps here.
         for (const [name, value] of Object.entries(family.layer.light)) {
           const darkValue = family.layer.dark[name] ?? value;
-          if (name === '--dsw-alias-bg-base') {
+          if (name === '--dsw-alias-bg-base' || name === '--dsw-specific-sidebar-fill') {
             overrides[name] = { light: scaleAlpha(value, factor), dark: scaleAlpha(darkValue, factor) };
           } else {
             overrides[name] = { light: value, dark: darkValue };
@@ -2487,6 +2490,8 @@ ${PAGE_CSS}`;
           workspaceChip: workspaceChipProbe(),
           themeNeighbors: themeNeighborProbe(),
           themeHead: probeStyle('.ts-headBtn'),
+          sidebarCandidates: [...document.querySelectorAll('*')].filter((node) => typeof node.className === 'string' && /sidebar/i.test(node.className)).slice(0, 6).map((node) => { const style = getComputedStyle(node); const rect = node.getBoundingClientRect(); return { cls: String(node.className).slice(0, 90), bg: style.backgroundColor, w: Math.round(rect.width), h: Math.round(rect.height), x: Math.round(rect.x) }; }),
+          mainSurface: (() => { const node = document.querySelector('[data-conversation-root], [class*="scrollBody"], [class*="centerCol"], main'); if (!node) return null; const style = getComputedStyle(node); return { cls: String(node.className || '').slice(0, 90), bg: style.backgroundColor }; })(),
           themeFab: probeStyle('.ts-fabBtn'),
           title: String(document.title).slice(0, 140),
           bodyTextSample: String((document.body && document.body.innerText) || '').replace(/\s+/g, ' ').slice(0, 160),
