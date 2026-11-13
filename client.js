@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.4+clarity-ladder';
+      const BUILD = '1.3.5+sharp-clear';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -1071,18 +1071,29 @@ window.__ModuleLoader__.load({
     function glowFor(palette, scheme) {
       const dark = scheme === 'dark';
       return [
-        `radial-gradient(52% 42% at 72% 38%, ${veil('#FFFFFF', dark ? 0.08 : 0.22)} 0%, transparent 70%)`,
-        `radial-gradient(42% 38% at 24% 24%, ${veil(palette.brand, dark ? 0.14 : 0.08)} 0%, transparent 72%)`,
+        `radial-gradient(52% 42% at 72% 38%, ${veil('#FFFFFF', dark ? 0.05 : 0.07)} 0%, transparent 70%)`,
+        `radial-gradient(42% 38% at 24% 24%, ${veil(palette.brand, dark ? 0.09 : 0.05)} 0%, transparent 72%)`,
       ].join(', ');
     }
 
     function sheenFor(scheme) {
-      return `linear-gradient(118deg, transparent 34%, ${veil('#FFFFFF', scheme === 'dark' ? 0.055 : 0.12)} 48%, transparent 62%)`;
+      return `linear-gradient(118deg, transparent 34%, ${veil('#FFFFFF', scheme === 'dark' ? 0.035 : 0.06)} 48%, transparent 62%)`;
     }
 
     const NOISE_DATA_URI =
       "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.34'/></svg>\")";
 
+    /* Focal point (horizontal background-position) per theme. `cover` on a 16:9
+     * window crops ~12% of a 3840-wide image; themes whose subject sits on the
+     * right get a higher value so the subject (flower, lamp, cranes …) is not
+     * cut off, while the paper-like left side still holds the text column. */
+    const WALLPAPER_FOCUS = {
+      'ink-mist': 50, celadon: 72, parchment: 50, moonlit: 72, 'watercolor-bloom': 88,
+      'color-field': 50, 'oil-dusk': 55, 'silver-film': 50, 'spring-river': 58,
+      'bamboo-wind': 62, 'morning-page': 60, 'sea-horizon': 66, 'lantern-night': 82,
+      'starry-journey': 64, 'ancient-path': 72, 'lotus-dawn': 66, 'home-smoke': 66,
+      'rain-tea': 86, 'summit-dawn': 58, 'paper-wish': 86,
+    };
     /* Compose derived data once. */
     for (const family of FAMILIES) {
       family.palettes = {
@@ -1118,6 +1129,7 @@ html[data-theme-studio="${family.id}"] {
   --ts-canvas: ${light.base};
   --ts-art: ${family.artByScheme.light.join(',\n    ')};
   --ts-scrim: ${scrimFor(light, 'light')};
+  --ts-focus: ${WALLPAPER_FOCUS[family.id] ?? 50}%;
   --ts-glow: ${glowFor(light, 'light')};
   --ts-sheen: ${sheenFor('light')};
   --ts-sheet: ${sheetFor(light, 'light')};
@@ -1128,6 +1140,7 @@ html[data-theme-studio="${family.id}"] body[data-ds-dark-theme] {
   --ts-canvas: ${dark.base};
   --ts-art: ${family.artByScheme.dark.join(',\n    ')};
   --ts-scrim: ${scrimFor(dark, 'dark')};
+  --ts-focus: ${WALLPAPER_FOCUS[family.id] ?? 50}%;
   --ts-glow: ${glowFor(dark, 'dark')};
   --ts-sheen: ${sheenFor('dark')};
   --ts-sheet: ${sheetFor(dark, 'dark')};
@@ -1250,8 +1263,25 @@ html[data-theme-studio] { --ts-veil: 0.44; }
 html[data-theme-studio] body[data-ds-dark-theme] { --ts-veil: 0.46; }
 html[data-theme-studio][data-theme-clarity="soft"] { --ts-veil: 0.66; }
 html[data-theme-studio][data-theme-clarity="soft"] body[data-ds-dark-theme] { --ts-veil: 0.64; }
-html[data-theme-studio][data-theme-clarity="clear"] { --ts-veil: 0.2; }
-html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme] { --ts-veil: 0.3; }
+html[data-theme-studio][data-theme-clarity="clear"] { --ts-veil: 0.16; }
+html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme] { --ts-veil: 0.26; }
+/* Clear mode is a promise: keep the artwork itself crisp.
+ * - no zoom/scale animation (the 1.05–1.12 upscale resamples the wallpaper)
+ * - the living-light glow layer is nearly removed (it veils detail)
+ * - a small unsharp pass restores the high-frequency edges that a lifted
+ *   dark companion image (or a soft watercolour source) lacks.
+ */
+html[data-theme-studio][data-theme-clarity="clear"] body::before {
+  filter: saturate(1.06) contrast(1.04) url(#ts-clarity-sharpen);\n  image-rendering: -webkit-optimize-contrast;
+  transform: translate3d(0, 0, 0);
+  animation: none;
+  /* No compositor layer promotion: an animated/upscaled fixed layer can be
+   * rasterised at a lower resolution on hi-dpi displays, which reads as blur. */
+  will-change: auto;
+  backface-visibility: visible;
+}
+html[data-theme-studio][data-theme-clarity="clear"] body::after { opacity: 0.16; }
+html[data-theme-studio][data-theme-clarity="clear"] body[data-ds-dark-theme]::after { opacity: 0.1; }
 html[data-theme-studio] body { background-color: var(--ts-canvas) !important; background-image: none !important; }
 html[data-theme-studio] #root { position: relative; z-index: 1; }
 html[data-theme-studio] body::before,
@@ -1266,7 +1296,7 @@ html[data-theme-studio] body::after {
 html[data-theme-studio] body::before {
   background-image: var(--ts-scrim), var(--ts-art-current, var(--ts-art));
   background-size: cover;
-  background-position: center;
+  background-position: var(--ts-focus, 50%) center;
   background-repeat: no-repeat;
   /* A whisper of local contrast keeps the artwork from reading as flat haze
    * once the scrim is thinned; the layer is static apart from the GPU pan. */
@@ -1280,13 +1310,13 @@ html[data-theme-studio] body::after {
   background-size: 150% 150%, 200% 200%;
   background-position: 60% 40%, 0 0;
   background-repeat: no-repeat, no-repeat;
-  opacity: 0.6;
+  opacity: 0.4;
   mix-blend-mode: normal;
   transform: translate3d(-1.8%, 1.2%, 0) scale(1.08);
   animation: ts-drift var(--ts-drift-dur, 44s) ease-in-out infinite alternate;
   will-change: transform;
 }
-html[data-theme-studio] body[data-ds-dark-theme]::after { opacity: 0.42; }
+html[data-theme-studio] body[data-ds-dark-theme]::after { opacity: 0.28; }
 @keyframes ts-pan {
   from { transform: translate3d(-1.2%, 0.8%, 0) scale(1.05); }
   to { transform: translate3d(1.2%, -0.8%, 0) scale(1.09); }
@@ -2860,13 +2890,52 @@ ${PAGE_CSS}`;
 
     function insertStyles(ctx, css) {
       const stylesApi = typeof styles !== 'undefined' ? styles : null;
-      if (stylesApi && typeof stylesApi.insert === 'function') return stylesApi.insert(css);
-      if (typeof document === 'undefined') return () => {};
-      const tag = document.createElement('style');
-      tag.dataset.plugin = 'dsh-theme-studio';
-      tag.textContent = css;
-      document.head.appendChild(tag);
-      return () => tag.remove();
+      let removeShapes = () => {};
+      if (typeof document !== 'undefined' && document.body && typeof document.createElementNS === 'function') {
+        // Invisible SVG filter used by clear mode's unsharp pass.
+        if (!document.getElementById('ts-clarity-filter')) {
+          const ns = 'http://www.w3.org/2000/svg';
+          const svg = document.createElementNS(ns, 'svg');
+          svg.id = 'ts-clarity-filter';
+          svg.setAttribute('width', '0');
+          svg.setAttribute('height', '0');
+          svg.setAttribute('aria-hidden', 'true');
+          svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none';
+          const defs = document.createElementNS(ns, 'defs');
+          const filter = document.createElementNS(ns, 'filter');
+          filter.id = 'ts-clarity-sharpen';
+          filter.setAttribute('x', '0');
+          filter.setAttribute('y', '0');
+          filter.setAttribute('width', '100%');
+          filter.setAttribute('height', '100%');
+          filter.setAttribute('color-interpolation-filters', 'sRGB');
+          const kernel = document.createElementNS(ns, 'feConvolveMatrix');
+          kernel.setAttribute('order', '3');
+          kernel.setAttribute('preserveAlpha', 'true');
+          kernel.setAttribute('edgeMode', 'duplicate');
+          kernel.setAttribute('kernelMatrix', '0 -0.06 0 -0.06 1.24 -0.06 0 -0.06 0');
+          filter.appendChild(kernel);
+          defs.appendChild(filter);
+          svg.appendChild(defs);
+          document.body.appendChild(svg);
+          removeShapes = () => svg.remove();
+        }
+      }
+      let removeSheet = () => {};
+      if (stylesApi && typeof stylesApi.insert === 'function') {
+        const dispose = stylesApi.insert(css);
+        removeSheet = () => { if (typeof dispose === 'function') dispose(); };
+      } else if (typeof document !== 'undefined') {
+        const tag = document.createElement('style');
+        tag.dataset.plugin = 'dsh-theme-studio';
+        tag.textContent = css;
+        document.head.appendChild(tag);
+        removeSheet = () => tag.remove();
+      }
+      return () => {
+        removeSheet();
+        removeShapes();
+      };
     }
 
     return {
