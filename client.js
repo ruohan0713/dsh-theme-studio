@@ -84,7 +84,7 @@ window.__ModuleLoader__.load({
       const STORAGE_KEY = 'dsh-theme-studio/v5';
       const WALLPAPER_THEMES = 6;
       /** Reported by the diagnostics UI probe so a loaded build is identifiable. */
-      const BUILD = '1.3.6+clear-all';
+      const BUILD = '1.3.7+fab-context';
 
     /* ------------------------------------------------------------------ *
      * Colour helpers
@@ -1238,8 +1238,14 @@ html[data-theme-studio="${family.id}"] body[data-ds-dark-theme] {
 .ts-homeEntry { position: fixed; top: calc(var(--dsh-frame-overlay-top, 20px) + 2px); right: 56px; z-index: 900; display: flex; align-items: center; pointer-events: auto; }
 /* Plugin-owned floating switch: present in every state, and hidden only where a
  * better seat already exists (session header switch / new-session Hero chip). */
-.ts-fabRoot { position: fixed; top: calc(var(--dsh-frame-overlay-top, 20px) + 2px); right: 56px; z-index: 901; display: flex; align-items: center; pointer-events: auto; }
+.ts-fabRoot { position: fixed; top: calc(var(--dsh-frame-overlay-top, 20px) + 46px); right: 56px; z-index: 901; display: flex; align-items: center; pointer-events: auto; }
 html[data-theme-studio] body:has(.ts-headWrap.is-header) .ts-fabRoot { display: none; }
+/* Settings / plugins pages and any modal overlay have their own header actions
+ * in the top-right corner; the floating switch would sit on top of them. */
+html[data-theme-studio] body:has([data-shortcut-modal="settings"]) .ts-fabRoot,
+html[data-theme-studio] body:has([role="presentation"] > [role="dialog"][aria-modal="true"]) .ts-fabRoot { display: none; }
+/* Outside a conversation/home surface there is no theme context to switch. */
+html[data-theme-studio] body:not(:has([data-conversation-header-leading], [data-conversation-root], [data-conversation-composer-overlay], [data-slot="conversation.session"], [class*="heroWorkspaceRow"], [class*="heroOptions"])) .ts-fabRoot { display: none; }
 .ts-fabBtn { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 6px; border: 0.5px solid var(--dsw-alias-border-l4); border-radius: var(--dsw-radius-sm); background: transparent; color: var(--dsw-alias-label-primary); font: inherit; font-size: 11px; line-height: 16px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease; }
 .ts-fabBtn:hover, .ts-fabBtn[aria-expanded="true"] { background: var(--dsw-alias-interactive-bg-hover); color: var(--dsw-alias-label-primary); }
 .ts-fabBtnLabel { white-space: nowrap; }
@@ -2579,6 +2585,7 @@ ${PAGE_CSS}`;
         let host = null;
         let unsubscribe = null;
         let panel = null;
+        let stopContextWatch = () => {};
         const listeners = [];
         const on = (target, type, handler, capture) => {
           target.addEventListener(type, handler, capture);
@@ -2715,11 +2722,62 @@ ${PAGE_CSS}`;
           );
           unsubscribe = UI_BINDING.subscribe(() => render());
           render();
+          /* Runtime guard for hosts where the CSS markers do not cover a new
+           * surface: only show the switch on conversation/home, and never while
+           * a settings/plugins dialog is open. */
+          const contextAllowed = () => {
+            if (document.querySelector('[data-shortcut-modal="settings"]')) return false;
+            if (document.querySelector('[role="presentation"] > [role="dialog"][aria-modal="true"]')) return false;
+            if (document.querySelector('[data-conversation-header-leading], [data-conversation-root], [data-conversation-composer-overlay], [data-slot="conversation.session"]')) return true;
+            return [...document.querySelectorAll('div[class]')].some((node) => /heroWorkspaceRow|heroOptions/.test(String(node.className)));
+          };
+          let contextObserver = null;
+          let contextTimer = null;
+          const syncContext = () => {
+            if (!host) return;
+            try {
+              const allowed = contextAllowed();
+              host.style.display = allowed ? '' : 'none';
+              if (!allowed && open) setOpen(false);
+            } catch {
+              /* leave the switch visible if the host DOM cannot be inspected */
+            }
+          };
+          if (typeof MutationObserver === 'function') {
+            contextObserver = new MutationObserver(syncContext);
+            contextObserver.observe(document.body, {
+              childList: true,
+              subtree: true,
+              attributes: true,
+              attributeFilter: ['class', 'data-shortcut-modal', 'aria-modal'],
+            });
+          }
+          if (typeof window.setInterval === 'function') contextTimer = window.setInterval(syncContext, 1500);
+          syncContext();
+          stopContextWatch = () => {
+            if (contextObserver) {
+              try {
+                contextObserver.disconnect();
+              } catch {
+                /* ignore */
+              }
+              contextObserver = null;
+            }
+            if (contextTimer !== null) {
+              window.clearInterval(contextTimer);
+              contextTimer = null;
+            }
+          };
         } catch (error) {
           if (host && typeof host.remove === 'function') host.remove();
           return () => {};
         }
         return () => {
+          try {
+            if (stopContextWatch) stopContextWatch();
+          } catch {
+            /* ignore */
+          }
           try {
             if (unsubscribe) unsubscribe();
           } catch {
