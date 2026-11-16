@@ -2,6 +2,7 @@
 
 ## 1.4.1 — 2026-11-13
 
+- **npm 包 `dsh-theme-studio-art@1.4.1` 已发布**（latest）。
 - 移除侧栏底部头像上方的主题入口（sidebar.footer.action），只保留右上角入口。
 - 首页使用右上角浮动主题按钮，会话页使用会话头部主题按钮（互斥显示）；设置页入口保留。
 - 回归断言：不再注册 sidebar.footer.action。

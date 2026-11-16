@@ -1,6 +1,7 @@
 # DSH Theme Studio · 主题工作室
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-2f6f4f.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/dsh-theme-studio-art?color=cb3837)](https://www.npmjs.com/package/dsh-theme-studio-art)
 [![Release](https://img.shields.io/github/v/release/ruohan0713/dsh-theme-studio?color=8a6a4f)](https://github.com/ruohan0713/dsh-theme-studio/releases)
 [![DSH plugin](https://img.shields.io/badge/DeepSeek%20Harness-plugin-6c8cd5)](https://github.com/topics/dsh-plugin)
 [![Live demo](https://img.shields.io/badge/Live%20demo-GitHub%20Pages-c08a5a)](https://ruohan0713.github.io/dsh-theme-studio/)
@@ -64,17 +65,29 @@ Try the [live demo](https://ruohan0713.github.io/dsh-theme-studio/), download th
 
 ## 安装 Install
 
-### 方式 A：GitHub Release 预构建包（当前推荐）
+### 方式 A：npm / 插件管理器（推荐）
 
-npm 包还在审核/发布流程中，现在请直接用 Release 里的预构建包：
+npm 包已发布：**`dsh-theme-studio-art`**（当前 1.4.1）
+
+在 DSH 里打开 **设置 → 插件**（或插件市场）搜索安装，或直接用 CLI：
+
+```powershell
+npx @deepseek-ai/dsh plugin --profile desktop add dsh-theme-studio-art
+```
+
+安装后重启 DSH（或刷新窗口）即可。
+
+### 方式 B：GitHub Release 预构建包
+
+如果暂时不用 npm，可以下载 Release 里的预构建包：
 
 1. 下载：<https://github.com/ruohan0713/dsh-theme-studio/releases/latest/download/dsh-theme-studio-art.tgz>
 2. 解压到任意目录，例如 `~/dsh-plugins/dsh-theme-studio-art`。
-3. 按下面「方式 B」把该目录 link 进 DSH profile，重启 DSH。
+3. 按下面「方式 C」把该目录 link 进 DSH profile，重启 DSH。
 
-社区目录（awesome-dsh-plugin / dshmarket 的 **Themes** 标签页）已提交收录 PR；合并后也可以直接在 DSH 插件市场里一键安装，不需要 npm。
+社区目录（awesome-dsh-plugin / dshmarket 的 **Themes** 标签页）已提交收录 PR；合并后也可以直接在 DSH 插件市场里一键安装。
 
-### 方式 B：手动 link（开发 / 内网）
+### 方式 C：手动 link（开发 / 内网）
 
 1. 把本仓库（或 Release 解压目录）放到任意目录，例如 `~/dsh-plugins/dsh-theme-studio-art`。
 2. 在 DSH profile 的 `package.json` 依赖中加入：
@@ -98,20 +111,9 @@ npm 包还在审核/发布流程中，现在请直接用 Release 里的预构建
 
 > 注意：DSH 只加载 profile 内已安装/已链接的客户端插件；直接把文件夹拷到 `node_modules` 而不登记依赖不会被加载。
 
-### 方式 C：npm（暂未上架）
-
-npm 包名计划为 `dsh-theme-studio-art`；上架后可直接用插件管理器安装：
-
-```powershell
-npx @deepseek-ai/dsh plugin --profile desktop add dsh-theme-studio-art
-```
-
-上架前请不要用这条命令（会 404），用方式 A/B。
-
 ## 使用 Usage
 
-- **首页右上角 / 会话头部「主题」按钮**：点击打开主题气泡（20 套缩略图、固定/轮播、背景清晰度）。
-- **侧栏底部「主题」行**：任何页面都能打开同一个面板。
+- **首页右上角 / 会话头部「主题」按钮**：唯一入口，点击打开主题气泡（20 套缩略图、固定/轮播、背景清晰度）。
 - **设置 → 通用 → 主题**：20 个快捷卡片。
 - **设置 → 主题工作室**：完整画廊 + 动态壁纸开关 + 背景清晰度 + 壁纸目录说明。
 
