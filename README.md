@@ -26,6 +26,20 @@
 
 Try the [live demo](https://ruohan0713.github.io/dsh-theme-studio/), download the latest `.tgz` from [Releases](https://github.com/ruohan0713/dsh-theme-studio/releases), and follow the install section below.
 
+## 收录与下载 / Where to get it
+
+- **npm**：<https://www.npmjs.com/package/dsh-theme-studio-art>（当前 1.4.1）
+- **GitHub Release**：<https://github.com/ruohan0713/dsh-theme-studio/releases>
+- **在线预览 Demo**：<https://ruohan0713.github.io/dsh-theme-studio/>（不用安装）
+- **awesome-dsh-plugin**：收录 PR #14848 已合并，社区目录重建后会出现在 DSH 插件市场 / dshmarket 的 Themes 标签页
+- **传播素材**：`promo/` 目录（竖屏视频、方图、横图、中英文文案）
+
+安装命令：
+
+```powershell
+npx @deepseek-ai/dsh plugin --profile desktop add dsh-theme-studio-art
+```
+
 ## 20 套主题 · 浅色一览
 
 ![20 套主题浅色外观](assets/screenshots/themes-light.jpg)
