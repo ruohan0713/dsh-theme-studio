@@ -199,3 +199,15 @@ node --check index.js
 ---
 
 如果这个主题让 DSH 更舒服一点，欢迎在 GitHub 点个 ⭐，或把截图/建议发到 Issues。
+
+### HTTP access control
+
+All Theme Studio HTTP routes require DSH Connection admission, including manifest,
+wallpaper reads and uploads. Released hosts exposing `requestRejection` use that
+check; hosts exposing `admit` use its authenticated peer result. If neither API is
+available, requests are refused rather than served without protection.
+
+Diagnostics remain opt-in via `enable-diagnostics` and accept only JSON POSTs.
+GET-based diagnostic writes are no longer supported. Wallpaper upload remains a
+binary `image/*` POST with the existing name and size limits. Run the regression
+suite with `npm test`.

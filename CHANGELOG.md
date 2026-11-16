@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Protect all HTTP routes with DSH Connection admission checks; fail closed when no supported gate is available.
+- Require POST and application/json for opt-in diagnostics; remove GET-write fallbacks.
+- Preserve binary image uploads and existing filename/size restrictions.
+- Add access-control and request-contract regression tests.
+
 ## 1.4.1 — 2026-11-13
 
 - **npm 包 `dsh-theme-studio-art@1.4.1` 已发布**（latest）。

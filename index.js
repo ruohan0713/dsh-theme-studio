@@ -49,7 +49,7 @@ const MEDIA_TYPES = new Map([
 ]);
 
 /** Services this plugin needs before it can serve assets. */
-export const inject = ['webServer'];
+export const inject = ['webServer', 'connection'];
 
 /** JSON response helper. */
 function json(value, status = 200) {
@@ -191,25 +191,15 @@ async function handleDiag(req, res) {
       res.end('diagnostics disabled');
       return;
     }
-    if (req.method === 'GET') {
-      // Fallback channel for bridges that do not carry POST: base64 JSON in
-      // the query string, kept small by the client.
-      const url = new URL(req.url || '/', 'http://local');
-      const encoded = url.searchParams.get('data');
-      if (encoded === null) {
-        res.writeHead(400, { 'content-type': 'text/plain; charset=utf-8' });
-        res.end('missing data');
-        return;
-      }
-      const payload = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
-      await writeFile(DIAG_FILE, JSON.stringify({ receivedAt: new Date().toISOString(), payload }, null, 2) + '\n', 'utf8');
-      res.writeHead(204);
-      res.end();
+    if (req.method !== 'POST') {
+      res.writeHead(405, { allow: 'POST' });
+      res.end('POST only');
       return;
     }
-    if (req.method !== 'POST') {
-      res.writeHead(405, { allow: 'GET, POST', 'content-type': 'text/plain; charset=utf-8' });
-      res.end('GET or POST only');
+    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    if (type !== 'application/json') {
+      res.writeHead(415);
+      res.end('application/json required');
       return;
     }
     const chunks = [];
@@ -311,21 +301,54 @@ async function handleUpload(req, res) {
   }
 }
 
-/**
- * Register the asset and diagnostics routes.
- * @param {import('@deepseek-ai/cordis').Context} ctx - owning plugin context.
+/** Reject before reading files or consuming request bodies on every host version.
+ * Newer Connection exposes admit; shipped older hosts expose requestRejection.
+ * Unknown/missing APIs fail closed rather than silently exposing the routes.
  */
+function rejection(ctx, request) {
+  try {
+    if (typeof ctx.connection?.admit === 'function') {
+      const result = ctx.connection.admit(request);
+      return result?.peer ? undefined : (result?.rejection || 503);
+    }
+    if (typeof ctx.connection?.requestRejection === 'function') {
+      return ctx.connection.requestRejection(request);
+    }
+  } catch {
+    return 503;
+  }
+  return 503;
+}
+
+/** Register protected asset, diagnostics and upload routes. */
 export function apply(ctx) {
+  const protect = handler => async (req, res) => {
+    const status = rejection(ctx, req);
+    if (status !== undefined) {
+      res.writeHead(status, { 'cache-control': 'no-store' });
+      res.end();
+      return;
+    }
+    return handler(req, res);
+  };
+  const protectedResource = async request => {
+    const status = rejection(ctx, request);
+    if (status !== undefined) return new Response(null, { status, headers: { 'cache-control': 'no-store' } });
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      return new Response(null, { status: 405, headers: { allow: 'GET, HEAD' } });
+    }
+    return resource(request);
+  };
   ctx.effect(
-    () => ctx.webServer.register({ kind: 'prefix', path: ROUTE, resource }),
+    () => ctx.webServer.register({ kind: 'prefix', path: ROUTE, auth: 'required', resource: protectedResource }),
     'theme-studio: wallpaper + manifest route',
   );
   ctx.effect(
-    () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/diag`, handler: handleDiag }),
+    () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/diag`, auth: 'required', handler: protect(handleDiag) }),
     'theme-studio: diagnostics sink',
   );
   ctx.effect(
-    () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/upload`, handler: handleUpload }),
+    () => ctx.webServer.register({ kind: 'exact', path: `${ROUTE}/upload`, auth: 'required', handler: protect(handleUpload) }),
     'theme-studio: wallpaper upload',
   );
 }

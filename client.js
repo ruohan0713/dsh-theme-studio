@@ -66,12 +66,7 @@ window.__ModuleLoader__.load({
       } catch {
         /* ignore */
       }
-      try {
-        const encoded = btoa(unescape(encodeURIComponent(json)));
-        void fetch('/theme-studio/diag?data=' + encodeURIComponent(encoded), { method: 'GET', keepalive: true });
-      } catch {
-        /* ignore */
-      }
+
     }
 
     try {
@@ -2597,22 +2592,7 @@ ${PAGE_CSS}`;
                 if (response.ok) return;
                 throw new Error(`diag HTTP ${response.status}`);
               } catch {
-                // Desktop custom-protocol bridges may refuse POST; a minimal
-                // GET snapshot still lets the developer verify the live layer.
-                const minimal = {
-                  at: payload.at,
-                  url: payload.url,
-                  viewport: payload.viewport,
-                  platform: payload.platform,
-                  studio: payload.studio,
-                  body: payload.body,
-                  tokens: payload.tokens,
-                  nodes: (payload.nodes || []).slice(0, 10),
-                  wallpapers: (payload.wallpapers || []).map((item) => ({ theme: item.theme, name: item.name, loaded: item.loaded, reason: item.reason, naturalWidth: item.naturalWidth, naturalHeight: item.naturalHeight })),
-                  manifestDirectory: payload.manifestDirectory,
-                };
-                const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(minimal))));
-                await fetch(`${ROUTE}/diag?data=${encodeURIComponent(encoded)}`, { method: 'GET' });
+                // Diagnostics are best-effort; never fall back to a write via GET.
               }
             })
             .catch(() => {});
