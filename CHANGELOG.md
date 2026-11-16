@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.2 — 2026-11-16
 
 - Protect all HTTP routes with DSH Connection admission checks; fail closed when no supported gate is available.
 - Require POST and application/json for opt-in diagnostics; remove GET-write fallbacks.
